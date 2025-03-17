@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from kivy.uix.scrollview import ScrollView
 
+plt.set_loglevel("ERROR")
+
 class GridTemperature(GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

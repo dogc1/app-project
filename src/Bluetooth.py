@@ -37,13 +37,23 @@ class BluetoothConnection:
     def __init__(self, device_address: str, name = None):
         self._device_address: str = device_address
         self._client: BleakClient = None
-        self._connected: bool = False
         self._data = dict()
         self._data["Address"] = device_address
         self._data["Name"] = name
-
+        self._connect()
     
-    async def connect(self, queue):
+    async def _connect(self):
+        self._client = BleakClient(self._device_address)
+        logging.info("Connecting device with address: '%s' ...", self._device_address)
+        try:
+            await self._client.connect()
+            logging.info("Connected to device with address: '%s'", self._device_address)
+            return self._client
+        except Exception as e:
+            logging.error("Connection to device with address: '%s' failed!", self._device_address)
+        finally:
+            await self._client.disconnect()
+        '''
         async with BleakClient(self._device_address) as client:
             logging.info("Connecting device with address: '%s'", self._device_address)
             
@@ -51,35 +61,32 @@ class BluetoothConnection:
                 logging.info("Connected to device with address: '%s'", self._device_address)
                 self._connected = True
                 self._client = client
-                await self._request_data(queue)
+                #await self._request_data()
 
             else:
                 logging.error("Connection to device with address: '%s' failed!", self._device_address)
+        '''
+    async def request_data(self):
 
-    async def _request_data(self, queue):
-
-        logging.info("Refreshing data for device: '%s' every %s seconds...", 
+        logging.info("Fetching data for device: '%s'", 
             self._device_address, BluetoothConnection.refresh_timer)
         
-        while self._connected:
-            try:
+        try:
 
-                temp = await self._client.read_gatt_char(_TEMPERATURE_UUID)
-                pressure = await self._client.read_gatt_char(_PRESSURE_UUID)
-                humidity = await self._client.read_gatt_char(_HUMIDITY_UUID)
+            temp = await self._client.read_gatt_char(_TEMPERATURE_UUID)
+            pressure = await self._client.read_gatt_char(_PRESSURE_UUID)
+            humidity = await self._client.read_gatt_char(_HUMIDITY_UUID)
 
-                self._data["Temperature"] = self._encode_temperature(temp)
-                self._data["Humidity"] = self._encode_humidity(humidity)
-                self._data["Pressure"] = self._encode_pressure(pressure)
+            self._data["Temperature"] = self._encode_temperature(temp)
+            self._data["Humidity"] = self._encode_humidity(humidity)
+            self._data["Pressure"] = self._encode_pressure(pressure)
 
-                queue.put(self._data)
+            await asyncio.sleep(BluetoothConnection.refresh_timer)
 
-                await asyncio.sleep(BluetoothConnection.refresh_timer)
-
-            except BleakDeviceNotFoundError:
-                logging.error("Device with address: '%s' not found!", self._device_address)
-            except Exception as e:
-                logging.error("Error while connecting device '%s': %s", self._device_address, e)
+        except BleakDeviceNotFoundError:
+            logging.error("Device with address: '%s' not found!", self._device_address)
+        except Exception as e:
+            logging.error("Error while connecting device '%s': %s", self._device_address, e)
 
     def get_sensor_data(self):
         return self._data
