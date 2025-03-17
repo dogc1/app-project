@@ -1,28 +1,28 @@
+from Bluetooth import BluetoothConnection
+from multiprocessing import Process, Queue
 import json
-from kivy.app import App
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.popup import Popup
-
+import asyncio
+import time
 
 class Device:
-    def __init__(self, device_name, mac_address):
-        self.device_name = device_name
-        self.mac_address = mac_address
+    def __init__(self, mac_address, device_name):
+        self._device_name = device_name
+        self._mac_address = mac_address
+        self.device_connection()
 
-    def to_dict(self):
-        return {
-            "device_name": self.device_name,
-            "mac_address": self.mac_address
-        }
-
-
+    def device_connection(self):
+        bluetooth_con = BluetoothConnection(self._mac_address, self._device_name)
+        queue = Queue()
+        proc = Process(target=asyncio.run(bluetooth_con.connect(queue)), args=(queue,))
+        proc.start()
+        while True:
+            print("parent output:", print(queue.get()))
+            time.sleep(5)
+    
+'''
 class BluetoothDeviceManager:
     def __init__(self):
-        self.devices = self.load_devices()
+        self.devices = self.load_devices(self._mac_address, self._device_name)
 
     def load_devices(self):
         try:
@@ -35,7 +35,7 @@ class BluetoothDeviceManager:
         return devices
 
     def save_devices(self):
-        with open('devices.json', 'w') as f:
+        with open('devices.json', 'w') as f:s
             json.dump(self.devices, f, indent=4)
             print(f"Geräte gespeichert: {self.devices}")
 
@@ -56,51 +56,7 @@ class BluetoothDeviceManager:
                 self.save_devices()
                 return
         print(f"Kein Gerät mit MAC-Adresse {mac_address} gefunden.")
-
-
-class DeviceManagerApp(App):
-    def build(self):
-        self.manager = BluetoothDeviceManager()
-        self.layout = BoxLayout(orientation='vertical')
-
-        self.scrollview = ScrollView()
-        self.grid_layout = GridLayout(cols=1, size_hint_y=None)
-        self.grid_layout.bind(minimum_height=self.grid_layout.setter('height'))
-        self.load_devices_list()
-
-        self.scrollview.add_widget(self.grid_layout)
-        self.layout.add_widget(self.scrollview)
-
-        return self.layout
-
-    def load_devices_list(self):
-        """Lädt alle Geräte und zeigt sie in der Kivy-Oberfläche an."""
-        self.grid_layout.clear_widgets()  # Clear previous widgets
-        for device in self.manager.devices:
-            device_name = device['device_name']
-            mac_address = device['mac_address']
-            
-            device_label = Label(text=f"{device_name} ({mac_address})")
-            connect_button = Button(text="Verbinden", size_hint_y=None, height=40)
-            remove_button = Button(text="Löschen", size_hint_y=None, height=40)
-
-            connect_button.bind(on_press=lambda instance, mac=mac_address: self.connect_device(mac))
-            remove_button.bind(on_press=lambda instance, mac=mac_address: self.remove_device(mac))
-
-            self.grid_layout.add_widget(device_label)
-            self.grid_layout.add_widget(connect_button)
-            self.grid_layout.add_widget(remove_button)
-
-    def connect_device(self, mac_address):
-        """Verbindet sich mit dem Gerät anhand der MAC-Adresse."""
-        print(f"Verbinde mit Gerät: {mac_address}")
-        # Hier können Sie das Verbindungslogik implementieren, z.B. mit `Bleak` oder ähnlichem
-
-    def remove_device(self, mac_address):
-        """Löscht das Gerät aus der Liste und der Datei."""
-        self.manager.remove_device(mac_address)
-        self.load_devices_list()  # Aktualisiere die Anzeige nach dem Löschen
-
+'''
 
 if __name__ == '__main__':
-    DeviceManagerApp().run()
+    asyncio.run(Device("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1"))
