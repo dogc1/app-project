@@ -2,3 +2,7 @@ kivy==2.3.1
 kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip
 kivy-garden https://github.com/kivy-garden/matplotlib/archive/master.zip
 kivy-garden.matplotlib==0.1.1.dev0
+
+# Manuell ausführen
+# pip install kivy_garden.matplotlib
+# pip install setuptools

@@ -11,9 +11,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from kivy.uix.scrollview import ScrollView
 
-
-# Definition der Bildschirme
-
 class GridTemperature(GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -127,6 +124,7 @@ class DialogOne(Screen):
 humidity = 67.54
 temperature = 24.93
 presser = 980.4
+elements = ["Gerät 1", "Gerät 2", "Gerät 3"]
 
 class DialogTwo(Screen):
     def __init__(self, **kwargs):
@@ -158,9 +156,19 @@ class DialogThree(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
-        layout.add_widget(Label(text="Dies ist Dialog 3"))
-        self.add_widget(layout)
 
+        # Dynamisch Widgets hinzufügen
+        for item in elements:
+            layout.add_widget(Label(text=item))
+
+        self.add_widget(layout)
+        
+        # Beispiel: Hinzufügen einer Schaltfläche, um weitere Elemente zu generieren
+
+    def add_bluetooth_device(self):
+        layout = BoxLayout(orientation='vertical')        
+        # layout.add_widget(Label(text=listeofConnections))
+        self.add_widget(layout)
 
 # Definition des Hauptlayouts
 class MainLayout(BoxLayout):
