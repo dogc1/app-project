@@ -1,24 +1,35 @@
 from bluetooth import BluetoothConnection
-from multiprocessing import Process, Queue
-import json
+from queue import Queue
+import threading
 import asyncio
-import time
 
 class Device:
     def __init__(self, mac_address, device_name):
         self._device_name = device_name
         self._mac_address = mac_address
-        self.device_connection()
 
-    def device_connection(self):
-        bluetooth_con = BluetoothConnection(self._mac_address, self._device_name)
+    async def device_connection(self):
+        device_client = await BluetoothConnection(self._mac_address, self._device_name)
+
+        async def producer(w_queue):
+            while True:
+                data = await device_client.request_data()
+                print("write")
+                w_queue.put(data)
+                await asyncio.sleep(4)
+
+        async def consumer(r_queue):
+            while True:
+                print("read:", r_queue.get())
+                await asyncio.sleep(4)
+
         queue = Queue()
-        proc = Process(target=asyncio.run(bluetooth_con.connect(queue)), args=(queue,))
-        proc.start()
-        while True:
-            print("parent output:", print(queue.get()))
-            time.sleep(5)
-    
+        t_consumer = threading.Thread(target = consumer, args =(queue, )) 
+        t_producer = threading.Thread(target = producer, args =(queue, ))
+        t_consumer.start()
+        t_producer.start()
+
+                    
 '''
 class BluetoothDeviceManager:
     def __init__(self):
@@ -59,4 +70,5 @@ class BluetoothDeviceManager:
 '''
 
 if __name__ == '__main__':
-    asyncio.run(Device("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1"))
+    dev = Device("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
+    asyncio.run(dev.device_connection())
