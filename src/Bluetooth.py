@@ -1,8 +1,9 @@
-import asyncio
 from bleak import BleakScanner, BleakClient
 from bleak.exc import BleakDeviceNotFoundError
+import asyncio
 import struct
 import logging
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -19,10 +20,11 @@ class BluetoothDiscover:
         found_devices = await BleakScanner.discover(timeout = BluetoothDiscover._timeout, return_adv = True)
         device_data = dict()
         for key, device in found_devices.items():
-            logging.info("Found device %s", key)
             if device[0].name:
+                logging.info("Found device address: %s with name: %s", key, device[0].name)
                 device_data[key] = device[0].name
             else:
+                logging.info("Found device address: %s", key)
                 device_data[key] = None
         
         return device_data
@@ -41,7 +43,7 @@ class BluetoothConnection:
         self._data["Name"] = name
 
     
-    async def connect(self):
+    async def connect(self, queue):
         async with BleakClient(self._device_address) as client:
             logging.info("Connecting device with address: '%s'", self._device_address)
             
@@ -49,12 +51,12 @@ class BluetoothConnection:
                 logging.info("Connected to device with address: '%s'", self._device_address)
                 self._connected = True
                 self._client = client
-                await self._request_data()
+                await self._request_data(queue)
 
             else:
                 logging.error("Connection to device with address: '%s' failed!", self._device_address)
 
-    async def _request_data(self):
+    async def _request_data(self, queue):
 
         logging.info("Refreshing data for device: '%s' every %s seconds...", 
             self._device_address, BluetoothConnection.refresh_timer)
@@ -69,6 +71,8 @@ class BluetoothConnection:
                 self._data["Temperature"] = self._encode_temperature(temp)
                 self._data["Humidity"] = self._encode_humidity(humidity)
                 self._data["Pressure"] = self._encode_pressure(pressure)
+
+                queue.put(self._data)
 
                 await asyncio.sleep(BluetoothConnection.refresh_timer)
 
@@ -91,3 +95,10 @@ class BluetoothConnection:
     def _encode_pressure(self, raw_pressure):
         float_pressure = float(struct.unpack('<i', raw_pressure)[0] / 10)
         return ("{:.1f}".format(float_pressure), "hPa")
+    
+
+if __name__ == "__main__":
+    temp = BluetoothDiscover()
+    asyncio.run(temp.discover())
+    #temp2 = BluetoothConnection("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
+    #asyncio.run(temp2.connect())
