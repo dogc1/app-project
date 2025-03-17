@@ -10,10 +10,6 @@ from kivy_garden.matplotlib import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from kivy.uix.scrollview import ScrollView
-import asyncio
-
-from Bluetooth import BluetoothDiscover
-import TestFile
 
 class GridTemperature(GridLayout):
     def __init__(self, **kwargs):
@@ -160,8 +156,6 @@ class DialogThree(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
-        dict = asyncio.run(BluetoothDiscover().discover())
-        print(dict)
         # Dynamisch Widgets hinzufügen
         for item in elements:
             layout.add_widget(Label(text=item))
