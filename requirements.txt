@@ -6,3 +6,4 @@ kivy-garden.matplotlib==0.1.1.dev0
 # Manuell ausführen
 # pip install kivy_garden.matplotlib
 # pip install setuptools
+bleak==0.22.3
