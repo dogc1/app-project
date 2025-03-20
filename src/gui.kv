@@ -1,0 +1,30 @@
+<MainLayout>:
+    orientation: "vertical"
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: 0.1
+        Button:
+            text: "Wertentwicklung"
+            on_press: root.show_dialog_one(self)
+        Button:
+            text: "Aktuelle Werte"
+            on_press: root.show_dialog_two(self)
+        Button:
+            text: "Einstellungen"
+            on_press: root.show_dialog_three(self)
+
+    ScreenManager:
+        id: screen_manager
+        DialogOne:
+            name: "dialog_one"
+        DialogTwo:
+            name: "dialog_two"
+        DialogThree:
+            name: "dialog_three"
+
+<DialogOne>:
+
+<DialogTwo>:
+
+<DialogThree>:

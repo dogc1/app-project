@@ -1,14 +1,14 @@
 [app]
 
-title = EigenerTitel
-package.name = eigenesPaket
-package.domain = gsog.eigeneDomain
+title = TotalMess
+package.name = totalmess
+package.domain = gsog.totalmess
 
-source.dir = .
+source.dir = ./src
 source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
-requirements = python3,kivy
+requirements = python3,kivy==2.3.1,git+https://gitlab.com/kivymd/KivyMD.git,Kivy-Garden==0.1.5,kivy-garden.matplotlib==0.1.1.dev0,bleak==0.22.3,setuptools==76.0.0
 
 orientation = portrait
 fullscreen = 0

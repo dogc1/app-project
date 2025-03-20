@@ -95,10 +95,3 @@ class BluetoothConnection:
     def _encode_pressure(self, raw_pressure):
         float_pressure = float(struct.unpack('<i', raw_pressure)[0] / 10)
         return ("{:.1f}".format(float_pressure), "hPa")
-    
-
-if __name__ == "__main__":
-    temp = BluetoothDiscover()
-    asyncio.run(temp.discover())
-    #temp2 = BluetoothConnection("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
-    #asyncio.run(temp2.connect())
