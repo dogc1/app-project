@@ -204,7 +204,7 @@ class MainLayout(BoxLayout):
     def show_dialog_three(self, instance):
         self.screen_manager.current = "dialog_three"
 
-class MyApp(App):
+class AppMain(App):
     def build(self):
         self.title = 'Total mess'
         return MainLayout()

@@ -1,4 +1,4 @@
-from Bluetooth import BluetoothConnection
+from bluetooth import BluetoothConnection
 from multiprocessing import Process, Queue
 import json
 import asyncio
