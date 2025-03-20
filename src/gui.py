@@ -206,9 +206,6 @@ class MainLayout(BoxLayout):
 
 class MyApp(App):
     def build(self):
+        self.title = 'Total mess'
         return MainLayout()
-
-
-if __name__ == "__main__":
-    # Gui().run()
-    MyApp().run()
+    
