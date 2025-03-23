@@ -20,5 +20,3 @@ class MockupDaten:
             messungen.append(Messwert(datum.strftime("%d.%m.%Y %H:%M"), temperatur, luftfeuchtigkeit, luftdruck, geraetename))
 
         return geraetename, messungen
-    
-    def greateDevices():
