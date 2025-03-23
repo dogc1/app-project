@@ -4,3 +4,4 @@ Kivy-Garden==0.1.5
 kivy-garden.matplotlib==0.1.1.dev0
 bleak==0.22.3
 setuptools==76.0.0
+culsans==0.8.0

@@ -12,9 +12,9 @@ app-project>    ./venv/scripts/activate
 ```
 ##### 2. Abhängigkeiten installieren:
 ```
-app-project>    pip install -r requirements.txt
+app-project>    python -m pip install -r requirements.txt
 ```
 ##### 3. Programm starten:
 ```
-app-project>    python ./src/gui.py
+app-project>    python ./src/main.py
 ```
