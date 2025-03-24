@@ -4,7 +4,18 @@ from Messwert import Messwert
 
 
 class MockupDaten: 
+    """
+    Klasse zur Generierung von Mock-Daten für die Diagramme.
+    Methoden:
+        greateDatas(): Generiert eine Liste von 30 zufälligen Messwerten.
+    """
     def greateDatas(self):
+        """
+        Generiert 30 zufällige Messwerte mit festen Zeitintervallen.
+
+        Returns:
+            tuple: Gerätename und Liste von Messwerten.
+        """
         startzeitpunkt = datetime(2025, 3, 23, 8, 0)  # Beginn um 08:00 Uhr
         geraetename = "Sensor A"
 

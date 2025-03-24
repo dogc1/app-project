@@ -60,9 +60,19 @@ def get_new_data(dt):
 
 class GridTemperature(GridLayout):
     """
+    Eine Klasse, die ein GridLayout für die Darstellung von Temperaturwerten definiert.
+    Hintergrundfarbe: Grün.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert das GridLayout für Temperatur mit einem grünen Hintergrund.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         with self.canvas.before:
             Color(0, 197/255, 145/255, 0.8)  # RGBA: Grün
@@ -70,14 +80,31 @@ class GridTemperature(GridLayout):
         self.bind(size=self._update_rect, pos=self._update_rect)
 
     def _update_rect(self, instance, value):
+        """
+        Aktualisiert die Größe und Position des Rechtecks bei Änderungen im Layout.
+
+        Args:
+            instance: Die aktuelle Instanz des Layouts.
+            value: Der aktualisierte Wert (z. B. Größe oder Position).
+        """
         self.rect.size = instance.size
         self.rect.pos = instance.pos
 
 class GridHumidity(GridLayout):
     """
+    Eine Klasse, die ein GridLayout für die Darstellung von Luftfeuchtigkeitswerten definiert.
+    Hintergrundfarbe: Rot.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert das GridLayout für Luftfeuchtigkeit mit einem roten Hintergrund.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         with self.canvas.before:
             Color(227/255, 47/255, 50/255, 0.8)  # RGBA: Rot
@@ -85,14 +112,31 @@ class GridHumidity(GridLayout):
         self.bind(size=self._update_rect, pos=self._update_rect)
 
     def _update_rect(self, instance, value):
+        """
+        Aktualisiert die Größe und Position des Rechtecks bei Änderungen im Layout.
+
+        Args:
+            instance: Die aktuelle Instanz des Layouts.
+            value: Der aktualisierte Wert (z. B. Größe oder Position).
+        """
         self.rect.size = instance.size
         self.rect.pos = instance.pos
 
 class GridPressure(GridLayout):
     """
+    Eine Klasse, die ein GridLayout für die Darstellung von Luftdruckwerten definiert.
+    Hintergrundfarbe: Blau.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert das GridLayout für Luftdruck mit einem blauen Hintergrund.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         with self.canvas.before:
             Color(22/255, 46/255, 255/255, 0.8)  # RGBA: Blau
@@ -100,20 +144,44 @@ class GridPressure(GridLayout):
         self.bind(size=self._update_rect, pos=self._update_rect)
 
     def _update_rect(self, instance, value):
+        """
+        Aktualisiert die Größe und Position des Rechtecks bei Änderungen im Layout.
+
+        Args:
+            instance: Die aktuelle Instanz des Layouts.
+            value: Der aktualisierte Wert (z. B. Größe oder Position).
+        """
         self.rect.size = instance.size
         self.rect.pos = instance.pos
 
 class GridDiagramm(GridLayout):
     """
+    Eine Klasse, die ein allgemeines GridLayout für Diagramme definiert.
+    Die Hintergrundfarbe wird dynamisch erstellt.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert das GridLayout für Diagramme mit einem dynamischen Hintergrund.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         with self.canvas.before:
             self.rect = Rectangle(size=self.size, pos=self.pos)
         self.bind(size=self._update_rect, pos=self._update_rect)
 
     def _update_rect(self, instance, value):
+        """
+        Aktualisiert die Größe und Position des Rechtecks bei Änderungen im Layout.
+
+        Args:
+            instance: Die aktuelle Instanz des Layouts.
+            value: Der aktualisierte Wert (z. B. Größe oder Position).
+        """
         self.rect.size = instance.size
         self.rect.pos = instance.pos
         
@@ -127,20 +195,38 @@ temperaturen = [messung.temperatur for messung in geratedDatas]
 luftfeuchtigkeiten = [messung.luftfeuchtigkeit for messung in geratedDatas]
 luftdruecke = [messung.luftdruck for messung in geratedDatas]
 
-temperatureY = [25.49, 25.46, 25.42, 25.39, 25.30, 25.23, 25.04, 24.93, 24.83, 24.77, 24.64, 24.42, 24.40, 24.39, 24.37, 24.36, 24.36, 24.33, 24.33, 24.32]
-start_time = datetime.now().replace(hour=23, minute=0, second=0, microsecond=0)
 
 class DialogOne(Screen):
     """
+    Ein Bildschirm, der verschiedene Diagramme (Temperatur, Luftfeuchtigkeit und Luftdruck)
+    in einem scrollbaren Layout anzeigt. Jedes Diagramm zeigt Daten im Zeitverlauf mit 
+    Markierungen für Tageswechsel.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert den DialogOne-Bildschirm mit einer scrollbaren Ansicht und 
+        dynamisch generierten Diagrammen für Temperatur, Luftfeuchtigkeit und Luftdruck.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         scroll_view = ScrollView(size_hint=(1, 1))
         grid = GridDiagramm(cols=1, size_hint_y=None)
         grid.bind(minimum_height=grid.setter('height'))
 
         def add_fixed_height_plot(fig, grid, height=400):
+            """
+            Fügt ein Diagramm mit einer festen Höhe dem Raster hinzu.
+
+            Args:
+                fig: Die matplotlib-Figur, die dem Layout hinzugefügt werden soll.
+                grid: Das Rasterlayout, zu dem die Figur hinzugefügt wird.
+                height (int): Die Höhe der Figur in Pixeln.
+            """
             canvas = FigureCanvasKivyAgg(fig)
             canvas.size_hint_y = None  # Deaktiviert automatische Höhenanpassung
             canvas.height = height  # Setzt fixe Höhe
@@ -193,28 +279,40 @@ class DialogOne(Screen):
 
 class DialogTwo(Screen):
     """
+    Ein Bildschirm, der aktuelle Werte für Temperatur, Luftfeuchtigkeit und Luftdruck 
+    in drei separaten Rasterlayouts anzeigt. Die Werte werden periodisch aktualisiert.
+
     __author__ = Jonas Jäger, Dario Gloc
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert den DialogTwo-Bildschirm mit einem vertikalen Layout, 
+        das drei Raster enthält. Jedes Raster zeigt ein Label und einen dynamisch 
+        aktualisierten Wert für Temperatur, Luftfeuchtigkeit und Luftdruck an.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
 
         # Erstes GridTemperature
         self.grid1 = GridTemperature(cols=1)
         self.grid1.add_widget(Label(text="Temperatur"))
-        self.temperature = Label(text=" ".join(temperature))
+        self.temperature = Label(text=" ".join(str(22,5)))
         self.grid1.add_widget(self.temperature)
 
         # Zweites GridHumidity
         self.grid2 = GridHumidity(cols=1)
         self.grid2.add_widget(Label(text="Luftfeuchtigkeit"))
-        self.humidity = Label(text=" ".join(humidity))
+        self.humidity = Label(text=" ".join(str(65,4)))
         self.grid2.add_widget(self.humidity)
 
         # Drittes GridPressure
         self.grid3 = GridPressure(cols=1)
         self.grid3.add_widget(Label(text="Luftdruck"))
-        self.pressure = Label(text=" ".join(pressure))
+        self.pressure = Label(text=" ".join(str(960,3)))
         self.grid3.add_widget(self.pressure)
 
         # GridLayouts zum BoxLayout hinzufügen
@@ -226,13 +324,24 @@ class DialogTwo(Screen):
         Clock.schedule_interval(self._update, 5)
 
     def _update(self, dt):
+        """
+        Aktualisiert periodisch die angezeigten Werte für Temperatur, Luftfeuchtigkeit 
+        und Luftdruck.
+
+        Args:
+            dt: Zeitintervall zwischen den Aktualisierungen.
+        """
         global temperature, humidity, pressure
-        self.temperature.text = " ".join(temperature)
-        self.humidity.text = " ".join(humidity)
-        self.pressure.text = " ".join(pressure)
+        self.temperature.text = " ".join(22,5)
+        self.humidity.text = " ".join(65,4)
+        self.pressure.text = " ".join(960,3)
         
 class DialogThree(Screen):
     """
+    Ein Bildschirm, der Verbindungsinformationen für das Bloothousegerät anzeigt. 
+    Wenn das Bloothousegerät nicht verbunden ist, wird eine entsprechende Meldung angezeigt. 
+    Aktualisiert die Verbindungsinformationen in regelmäßigen Abständen.
+
     __author__ = Jonas Jäger, Tahir Bulut
     """
     def __init__(self, **kwargs):
@@ -253,6 +362,13 @@ class DialogThree(Screen):
         Clock.schedule_interval(self.update_device_info, 5)
 
     def update_device_info(self, dt):
+        """
+        Aktualisiert die Verbindungsinformationen des Geräts und gibt 
+        Debug-Informationen in der Konsole aus.
+
+        Args:
+            dt: Zeitintervall zwischen den Aktualisierungen.
+        """
         global connected, address, name
 
         print("XXXXXXXXXX", connected)
@@ -274,12 +390,24 @@ class DialogThree(Screen):
 
 class MainLayout(BoxLayout):
     """
+    Das Hauptlayout der Anwendung, das ein Menü und einen ScreenManager enthält.
+    Über das Menü kann der Nutzer zwischen verschiedenen Dialogen navigieren.
+
     __author__ = Jonas Jäger
     """
     def __init__(self, **kwargs):
+        """
+        Initialisiert das Hauptlayout mit einem vertikalen Layout, einem Menü oben 
+        und einem ScreenManager, der die dynamischen Inhalte verwaltet.
+
+        Args:
+            kwargs: Zusätzliche Argumente, die an den Initialisierer der Superklasse 
+            weitergegeben werden.
+        """
         super().__init__(**kwargs)
         self.orientation = 'vertical'
-
+        
+        # Aktualisiert Daten in regelmäßigen Abständen
         Clock.schedule_interval(get_new_data, 5)
 
         # Menü oben
@@ -287,9 +415,13 @@ class MainLayout(BoxLayout):
         btn_dialog_one = Button(text="Wertentwicklung")
         btn_dialog_two = Button(text="Aktuelle Werte")
         btn_dialog_three = Button(text="Geräte Status")
+
+        # Verknüpft die Buttons mit den entsprechenden Dialoganzeigen
         btn_dialog_one.bind(on_press=self.show_dialog_one)
         btn_dialog_two.bind(on_press=self.show_dialog_two)
         btn_dialog_three.bind(on_press=self.show_dialog_three)
+
+        # Buttons zum Menü-Layout hinzufügen
         menu_layout.add_widget(btn_dialog_one)
         menu_layout.add_widget(btn_dialog_two)
         menu_layout.add_widget(btn_dialog_three)
@@ -303,19 +435,45 @@ class MainLayout(BoxLayout):
         self.add_widget(self.screen_manager)
 
     def show_dialog_one(self, instance):
+        """
+        Zeigt den Dialog "Wertentwicklung" im ScreenManager an.
+
+        Args:
+            instance: Die Instanz des gedrückten Buttons.
+        """
         self.screen_manager.current = "dialog_one"
 
     def show_dialog_two(self, instance):
+        """
+        Zeigt den Dialog "Aktuelle Werte" im ScreenManager an.
+
+        Args:
+            instance: Die Instanz des gedrückten Buttons.
+        """
         self.screen_manager.current = "dialog_two"
 
     def show_dialog_three(self, instance):
+        """
+        Zeigt den Dialog "Geräte Status" im ScreenManager an.
+
+        Args:
+            instance: Die Instanz des gedrückten Buttons.
+        """
         self.screen_manager.current = "dialog_three"
 
 class AppMain(App):
     """
+    Die Hauptanwendung, die das Hauptlayout erstellt und die Geräteverbindung initiiert.
+
     __author__ = Jonas Jäger
     """
     def build(self):
+        """
+        Baut das Hauptlayout der Anwendung auf und startet die Verbindung zum Gerät.
+
+        Returns:
+            MainLayout: Das Hauptlayout der Anwendung.
+        """
         self.title = 'Total mess'
         Clock.schedule_once(connect_device, 0)
         return MainLayout()
