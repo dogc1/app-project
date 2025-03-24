@@ -23,19 +23,25 @@ humidity = tuple()
 pressure = tuple()
 
 elements = ["Gerät 1"]
+connected = False
+name = ""
+address = ""
 
 device = DeviceCommunication("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
 def connect_device(dt):
     device.run_thread()
 
 def get_new_data(dt):
-    global humidity, temperature, pressure
+    global humidity, temperature, pressure, connected, address, name
     data = device.get_thread_output()
    
     if data is not None:
         temperature = data["Temperature"]
         humidity = data["Humidity"]
         pressure = data["Pressure"]
+        connected = data["Connected"]
+        address = data["Address"]
+        name = data["Name"]
 
 class GridTemperature(GridLayout):
     def __init__(self, **kwargs):
@@ -196,19 +202,41 @@ class DialogTwo(Screen):
 class DialogThree(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical')
-        # Dynamisch Widgets hinzufügen
-        for item in elements:
-            layout.add_widget(Label(text=item))
+        self.layout = BoxLayout(orientation='vertical')
+        self.label_device_info = Label(
+            text="[color=ff0000]Nicht verbunden[/color]",
+            halign="left",
+            valign="top",
+            markup=True
+        )
+        self.layout.add_widget(self.label_device_info)
+        self.add_widget(self.layout)
 
-        self.add_widget(layout)
-        
-        # Beispiel: Hinzufügen einer Schaltfläche, um weitere Elemente zu generieren
+        self._no_data_counter = 0
+        self._last_data = None
 
-    def add_bluetooth_device(self):
-        layout = BoxLayout(orientation='vertical')        
-        # layout.add_widget(Label(text=listeofConnections))
-        self.add_widget(layout)
+        Clock.schedule_interval(self.update_device_info, 5)
+
+    def update_device_info(self, dt):
+        global connected, address, name
+
+        print("XXXXXXXXXX", connected)
+        print("XXXXXXXXXX", name)
+        print("XXXXXXXXXX", address)
+
+        # Wenn kein neues Data kommt, zeige letzten bekannten Status
+        if connected and address is not None and name is not None:
+            # Verbindung als aktiv ansehen, wenn in den letzten 2 Intervallen Daten kamen
+            status = "[color=00ff00]Verbunden[/color]"
+            
+            info_text = (
+                f"[b]Verbundene Gerätedaten:[/b]\n"
+                f"Name: {name}\n"
+                f"MAC-Adresse: {address}\n"
+                f"Status: {status}\n"
+            )
+            self.label_device_info.text = info_text
+
 
 # Definition des Hauptlayouts
 class MainLayout(BoxLayout):
@@ -222,7 +250,7 @@ class MainLayout(BoxLayout):
         menu_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1)
         btn_dialog_one = Button(text="Wertentwicklung")
         btn_dialog_two = Button(text="Aktuelle Werte")
-        btn_dialog_three = Button(text="Einstellungen")
+        btn_dialog_three = Button(text="Geräte Status")
         btn_dialog_one.bind(on_press=self.show_dialog_one)
         btn_dialog_two.bind(on_press=self.show_dialog_two)
         btn_dialog_three.bind(on_press=self.show_dialog_three)
