@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from kivy.uix.scrollview import ScrollView
 
+from MockDaten import MockupDaten
+
 from kivy.clock import Clock
 from device import DeviceCommunication
 
@@ -20,7 +22,7 @@ temperature = tuple()
 humidity = tuple()
 pressure = tuple()
 
-elements = []
+elements = ["Gerät 1"]
 
 device = DeviceCommunication("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
 def connect_device(dt):
@@ -82,9 +84,18 @@ class GridDiagramm(GridLayout):
         self.rect.size = instance.size
         self.rect.pos = instance.pos
         
+mockup = MockupDaten()
+geraet, geratedDatas = mockup.greateDatas()
+
+# Listen für die extrahierten Werte
+timestamps = [messung.datum for messung in geratedDatas]
+timestamps = [datetime.strptime(ts, "%d.%m.%Y %H:%M") for ts in timestamps]
+temperaturen = [messung.temperatur for messung in geratedDatas]
+luftfeuchtigkeiten = [messung.luftfeuchtigkeit for messung in geratedDatas]
+luftdruecke = [messung.luftdruck for messung in geratedDatas]
+
 temperatureY = [25.49, 25.46, 25.42, 25.39, 25.30, 25.23, 25.04, 24.93, 24.83, 24.77, 24.64, 24.42, 24.40, 24.39, 24.37, 24.36, 24.36, 24.33, 24.33, 24.32]
 start_time = datetime.now().replace(hour=23, minute=0, second=0, microsecond=0)
-timestamps = [start_time + timedelta(minutes=30 * i) for i in range(20)]
 
 class DialogOne(Screen):
     def __init__(self, **kwargs):
@@ -101,7 +112,7 @@ class DialogOne(Screen):
 
         # Temperatur
         fig, ax = plt.subplots()
-        ax.plot(timestamps, temperatureY, label="Temperatur")
+        ax.plot(timestamps, temperaturen, label="Temperatur")
         ax.set_title("Temperatur")
         ax.set_xlabel("Zeit")
         ax.set_ylabel("Temperatur °C")
@@ -115,7 +126,7 @@ class DialogOne(Screen):
 
         # Luftfeuchtigkeit
         fig2, ax2 = plt.subplots()
-        ax2.plot(timestamps, temperatureY, label="Luftfeuchtigkeit")
+        ax2.plot(timestamps, luftfeuchtigkeiten, label="Luftfeuchtigkeit")
         ax2.set_title("Luftfeuchtigkeit")
         ax2.set_xlabel("Zeit")
         ax2.set_ylabel("Luftfeuchtigkeit %")
@@ -129,7 +140,7 @@ class DialogOne(Screen):
 
         # Luftdruck
         fig3, ax3 = plt.subplots()
-        ax3.plot(timestamps, temperatureY, label="Luftdruck")
+        ax3.plot(timestamps, luftdruecke, label="Luftdruck")
         ax3.set_title("Luftdruck")
         ax3.set_xlabel("Zeit")
         ax3.set_ylabel("Luftdruck hPa")
