@@ -4,7 +4,6 @@ from time import sleep
 import struct
 import logging
 from culsans import Queue
-import asyncio
 
 logger = logging.getLogger("Bluetooth")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
