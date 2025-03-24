@@ -48,7 +48,6 @@ class BluetoothConnection:
             
             try:
                 logger.info("Connected to device with address: '%s'", self._device_address)
-                self._connected = True
                 self._client = client
                 await self._request_data()
 
@@ -60,7 +59,8 @@ class BluetoothConnection:
         logger.info("Fetching data for device: '%s' every %s seconds", 
             self._device_address, BluetoothConnection.refresh_timer)
 
-        while self._connected:
+        while True:
+            
             try:
                 sleep(BluetoothConnection.refresh_timer)
 

@@ -22,14 +22,14 @@ class DeviceCommunication:
                 "Starting thread to device with address '%s' and name '%s'",
                 self._mac_address, self._device_name)
             device = BluetoothConnection(self._queue, self._mac_address, self._device_name)
-            Thread(target=asyncio.run, args=(device.connect(),)).start()
+            Thread(target=asyncio.run, args=(device.connect(),), daemon=True).start()
         except Exception as e:
             logger.error(
                 "Thread connection to device with address '%s' and name '%s' failed! Error: %s",
                 self._mac_address, self._device_name, e)
 
     def get_thread_output(self):
-        if not self._queue.empty():
+        if self._queue.qsize() > 1:
             data = self._queue.sync_q.get(block=False, timeout=0)
             logger.info("Data from device with address '%s': %s", self._mac_address, data)
             return data

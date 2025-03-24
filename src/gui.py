@@ -205,6 +205,8 @@ class MainLayout(BoxLayout):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
 
+        Clock.schedule_interval(get_new_data, 5)
+
         # Menü oben
         menu_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1)
         btn_dialog_one = Button(text="Wertentwicklung")
@@ -238,5 +240,4 @@ class AppMain(App):
     def build(self):
         self.title = 'Total mess'
         Clock.schedule_once(connect_device, 0)
-        Clock.schedule_interval(get_new_data, 5)
         return MainLayout()
