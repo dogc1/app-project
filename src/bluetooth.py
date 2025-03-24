@@ -71,6 +71,7 @@ class BluetoothConnection:
                 self._data["Temperature"] = self._encode_temperature(temp)
                 self._data["Humidity"] = self._encode_humidity(humidity)
                 self._data["Pressure"] = self._encode_pressure(pressure)
+                self._data["Connected"] = self._client.is_connected
 
                 if not self._queue.full():
                     self._queue.sync_q.put_nowait(self._data)
