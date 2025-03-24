@@ -13,6 +13,30 @@ from kivy.uix.scrollview import ScrollView
 
 from MockDaten import MockupDaten
 
+from kivy.clock import Clock
+from device import DeviceCommunication
+
+plt.set_loglevel("ERROR")
+
+temperature = tuple()
+humidity = tuple()
+pressure = tuple()
+
+elements = ["Gerät 1"]
+
+device = DeviceCommunication("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
+def connect_device(dt):
+    device.run_thread()
+
+def get_new_data(dt):
+    global humidity, temperature, pressure
+    data = device.get_thread_output()
+   
+    if data is not None:
+        temperature = data["Temperature"]
+        humidity = data["Humidity"]
+        pressure = data["Pressure"]
+
 class GridTemperature(GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -131,37 +155,43 @@ class DialogOne(Screen):
         scroll_view.add_widget(grid)
         self.add_widget(scroll_view)
 
-
-humidity = luftfeuchtigkeiten[-1]
-temperature = temperaturen[-1]
-presser = luftdruecke[-1]
-elements = ["Gerät 1", "Gerät 2", "Gerät 3"]
-
 class DialogTwo(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
 
         # Erstes GridTemperature
-        grid1 = GridTemperature(cols=1)
-        grid1.add_widget(Label(text="Temperatur"))
-        grid1.add_widget(Label(text=str(temperature) + "°C" ))
+        self.grid1 = GridTemperature(cols=1)
+        self.grid1.add_widget(Label(text="Temperatur"))
+        self.temperature = Label(text=" ".join(temperature))
+        self.grid1.add_widget(self.temperature)
 
         # Zweites GridHumidity
-        grid2 = GridHumidity(cols=1)
-        grid2.add_widget(Label(text="Luftfeuchtigkeit"))
-        grid2.add_widget(Label(text= str(humidity) + "%"))
+        self.grid2 = GridHumidity(cols=1)
+        self.grid2.add_widget(Label(text="Luftfeuchtigkeit"))
+        self.humidity = Label(text=" ".join(humidity))
+        self.grid2.add_widget(self.humidity)
 
         # Drittes GridPressure
-        grid3 = GridPressure(cols=1)
-        grid3.add_widget(Label(text="Luftdruck"))
-        grid3.add_widget(Label(text=str(humidity) + "hPa"))
+        self.grid3 = GridPressure(cols=1)
+        self.grid3.add_widget(Label(text="Luftdruck"))
+        self.pressure = Label(text=" ".join(pressure))
+        self.grid3.add_widget(self.pressure)
 
         # GridLayouts zum BoxLayout hinzufügen
-        layout.add_widget(grid1)
-        layout.add_widget(grid2)
-        layout.add_widget(grid3)
+        layout.add_widget(self.grid1)
+        layout.add_widget(self.grid2)
+        layout.add_widget(self.grid3)
         self.add_widget(layout)
+        
+        Clock.schedule_interval(self._update, 5)
+
+    def _update(self, dt):
+        global temperature, humidity, pressure
+        self.temperature.text = " ".join(temperature)
+        self.humidity.text = " ".join(humidity)
+        self.pressure.text = " ".join(pressure)
+        
 
 class DialogThree(Screen):
     def __init__(self, **kwargs):
@@ -185,6 +215,8 @@ class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
+
+        Clock.schedule_interval(get_new_data, 5)
 
         # Menü oben
         menu_layout = BoxLayout(orientation='horizontal', size_hint_y=0.1)
@@ -218,5 +250,5 @@ class MainLayout(BoxLayout):
 class AppMain(App):
     def build(self):
         self.title = 'Total mess'
+        Clock.schedule_once(connect_device, 0)
         return MainLayout()
-    
