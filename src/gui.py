@@ -29,9 +29,24 @@ address = ""
 
 device = DeviceCommunication("08:F9:E0:F4:7B:3A", "GSOG_SENSOR1")
 def connect_device(dt):
+    """
+    __author__ = Dario Gloc
+    Starten des nebenläufigen Threads der Bluetoothverbindung zum Gerät
+
+    Parameters:
+        dt: delta-time für scheduling events
+    """
     device.run_thread()
 
 def get_new_data(dt):
+    """
+    __author__ = Dario Gloc, Tahir Bulut
+    Scheduled function zum Erhalt der aktualisierten Daten der Bluetoothverbindung 
+    Beschreiben der globalen Variablen zur Anzeige auf der GUI
+
+    Parameters:
+        dt: delta-time für scheduling events
+    """
     global humidity, temperature, pressure, connected, address, name
     data = device.get_thread_output()
    
@@ -44,6 +59,9 @@ def get_new_data(dt):
         name = data["Name"]
 
 class GridTemperature(GridLayout):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         with self.canvas.before:
@@ -56,6 +74,9 @@ class GridTemperature(GridLayout):
         self.rect.pos = instance.pos
 
 class GridHumidity(GridLayout):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         with self.canvas.before:
@@ -68,6 +89,9 @@ class GridHumidity(GridLayout):
         self.rect.pos = instance.pos
 
 class GridPressure(GridLayout):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         with self.canvas.before:
@@ -80,6 +104,9 @@ class GridPressure(GridLayout):
         self.rect.pos = instance.pos
 
 class GridDiagramm(GridLayout):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         with self.canvas.before:
@@ -104,6 +131,9 @@ temperatureY = [25.49, 25.46, 25.42, 25.39, 25.30, 25.23, 25.04, 24.93, 24.83, 2
 start_time = datetime.now().replace(hour=23, minute=0, second=0, microsecond=0)
 
 class DialogOne(Screen):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         scroll_view = ScrollView(size_hint=(1, 1))
@@ -162,6 +192,9 @@ class DialogOne(Screen):
         self.add_widget(scroll_view)
 
 class DialogTwo(Screen):
+    """
+    __author__ = Jonas Jäger, Dario Gloc
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
@@ -198,8 +231,10 @@ class DialogTwo(Screen):
         self.humidity.text = " ".join(humidity)
         self.pressure.text = " ".join(pressure)
         
-
 class DialogThree(Screen):
+    """
+    __author__ = Jonas Jäger, Tahir Bulut
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical')
@@ -237,9 +272,10 @@ class DialogThree(Screen):
             )
             self.label_device_info.text = info_text
 
-
-# Definition des Hauptlayouts
 class MainLayout(BoxLayout):
+    """
+    __author__ = Jonas Jäger
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
@@ -276,6 +312,9 @@ class MainLayout(BoxLayout):
         self.screen_manager.current = "dialog_three"
 
 class AppMain(App):
+    """
+    __author__ = Jonas Jäger
+    """
     def build(self):
         self.title = 'Total mess'
         Clock.schedule_once(connect_device, 0)
