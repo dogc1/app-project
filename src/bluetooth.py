@@ -11,17 +11,18 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 _TEMPERATURE_UUID = "2A6E"
 _HUMIDITY_UUID    = "2A6F"
 _PRESSURE_UUID    = "2A6D"
+
 class BluetoothDiscover:
     """
     __author__ = Tahir Bulut
 
-    Scannerklasse für Bluetooth
+    Scannerklasse für Bluetoothgeräte
     """
     _timeout = 5
 
     async def discover(self):
         """
-        Methode zum Scannen der verfübaren Bluetoothgeräte
+        Methode zum Scannen der erreichbaren Bluetoothgeräte
 
         Returns:
             dict: Dictionary mit Adressen und Gerätenamen, falls Gerätenamen verfügbar
